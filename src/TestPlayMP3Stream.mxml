@@ -4,14 +4,11 @@
 					   xmlns:mx="library://ns.adobe.com/flex/mx" creationComplete="application1_creationCompleteHandler(event)">
 	<fx:Script>
 		<![CDATA[
-			import com.dtedu.media.builder.FLVBuilder;
-			import com.dtedu.media.builder.MP3ToFLVBuilder;
-			import com.dtedu.media.builder.MP3ToFLVStreamBuilder;
+			import com.ansonkong.media.builder.MP3ToFLVStreamBuilder;
 			
 			import mx.events.FlexEvent;
 			protected var _nc:NetConnection;
 			protected var _ns:NetStream;
-			//			protected var _flvBytes:ByteArray;
 			protected var _urlloader:URLStream;
 			protected var _streamBuilder:MP3ToFLVStreamBuilder;
 			protected function application1_creationCompleteHandler(event:FlexEvent):void
@@ -22,11 +19,6 @@
 			}
 			protected function _onReceiveFLVBytes(flvBytes:ByteArray):void
 			{
-				/* var f:File = File.desktopDirectory.resolvePath("test2.flv");
-				var stream:FileStream = new FileStream();
-				stream.open(f, FileMode.APPEND);
-				stream.writeBytes(flvBytes);
-				stream.close(); */
 				_ns.appendBytes(flvBytes);
 			}
 			protected function _onProgress(e:ProgressEvent):void
@@ -43,7 +35,6 @@
 			
 			protected function _onNetStatus(e:NetStatusEvent):void
 			{
-				trace(e.info.code);
 				if(e.info.code == "NetConnection.Connect.Success")
 				{
 					_ns = new NetStream(_nc);
@@ -51,32 +42,12 @@
 					_ns.client = this;
 					_ns.play(null);
 					_ns.appendBytesAction(NetStreamAppendBytesAction.RESET_BEGIN);
-					//					_ns.appendBytes(_flvBytes);
 					
 					_urlloader = new URLStream();
 					_urlloader.addEventListener(ProgressEvent.PROGRESS, _onProgress);
-//					_urlloader.addEventListener(Event.COMPLETE, _onComplete);
 					_urlloader.load(new URLRequest("C:/Users/kongweian/Desktop/music.mp3"));
 				}
 			}
-			
-			protected function _onComplete(e:Event):void
-			{
-				var mp3Bytes:ByteArray = new ByteArray();
-				_urlloader.readBytes(mp3Bytes, 0, _urlloader.bytesAvailable);
-				var flvBytes:ByteArray = MP3ToFLVBuilder.build(mp3Bytes);
-				_ns.appendBytes(flvBytes);
-			}
-			
-			/* protected function _onCom(event:Event):void
-			{
-			var mp3Bytes:ByteArray = _urlloader.data;
-			_flvBytes = MP3ToFLVBuilder.build(mp3Bytes);
-			
-			_nc = new NetConnection();
-			_nc.addEventListener(NetStatusEvent.NET_STATUS, _onNetStatus);
-			_nc.connect(null);
-			} */
 			public function onMetaData(obj:Object = null):void
 			{
 				for(var key:* in obj)
@@ -84,7 +55,6 @@
 					trace(key + ":" + obj[key]);
 				}
 			}
-			
 		]]>
 	</fx:Script>
 </s:WindowedApplication>
